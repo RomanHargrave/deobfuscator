@@ -1,5 +1,6 @@
 package cf;
 
+
 public class classaccessflag extends accessflag 
 {
 	public final static short ACC_SUPER = 0x0020;

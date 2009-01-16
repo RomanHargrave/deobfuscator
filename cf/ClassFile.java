@@ -177,13 +177,16 @@ public class ClassFile
 			dos.writeShort(minor_version);
 			dos.writeShort(major_version);
 			/*Write back constant pool*/
+			constant_pool_count = constantpool.getinstance().getpoolcount();
+			Object[] object_pool = constantpool.getinstance().getpool();
 			dos.writeShort(constant_pool_count);
 			for(int i = 0; i < (constant_pool_count - 1); i++)
 			{
-				ciw.writecpinfo(constant_pool[i]);
+				cpinfo curcpinfo = (cpinfo)object_pool[i];
+				ciw.writecpinfo(curcpinfo);
 				/*Long and Double occupy two costant pool entries*/
-				if((constant_pool[i].gettype() == constanttype.CONSTANT_Long) 
-						|| (constant_pool[i].gettype() == constanttype.CONSTANT_Double))
+				if((curcpinfo.gettype() == constanttype.CONSTANT_Long) 
+						|| (curcpinfo.gettype() == constanttype.CONSTANT_Double))
 					i++;
 			}
 			dos.writeShort(access_flags);

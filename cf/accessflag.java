@@ -1,5 +1,6 @@
 package cf;
 
+
 public class accessflag 
 {
 	public final static short ACC_PUBLIC = 0x0001;
