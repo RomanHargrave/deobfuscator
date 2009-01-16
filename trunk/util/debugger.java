@@ -6,6 +6,7 @@ import java.io.PrintStream;
 import java.util.Date;
 import java.text.SimpleDateFormat;
 
+
 public class debugger 
 {
 	public final static int DEBUG_LEVEL_BYTES = 80;

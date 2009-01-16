@@ -1,5 +1,6 @@
 package cf;
 
+
 public class constanttype 
 {
 	public final static byte CONSTANT_Class = 7; 
