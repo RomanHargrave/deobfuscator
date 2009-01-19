@@ -3,7 +3,7 @@ package cp;
 import java.io.File;
 import java.util.HashMap;
 import java.util.Collection;
-
+import java.util.Vector;
 //import util.debugger;
 
 
@@ -11,6 +11,7 @@ public class ClassPath
 {
 	File class_path;
 	HashMap class_list;
+	Vector removed_class_list;
 	String path_name;
 	
 	public static ClassPath cp = null;
@@ -18,6 +19,7 @@ public class ClassPath
 	public ClassPath()
 	{
 		class_list = new HashMap();
+		removed_class_list = new Vector();
 	}
 	
 	public static ClassPath getInstance()
@@ -29,6 +31,39 @@ public class ClassPath
 	public boolean containsClass(String classfullname)
 	{
 		return class_list.containsKey(classfullname);
+	}
+	
+	public boolean containsClass(File classfile)
+	{
+		String filename = classfile.toString();
+		if(!filename.endsWith(".class"))
+			return false;
+		String classfn = filename.substring(path_name.length() + 1, filename.indexOf(".class"));
+		System.out.println(classfn);
+		return containsClass(classfn);
+	}
+	
+	public void removeClass(String classfullname)
+	{
+		class_list.remove(classfullname);
+	}
+	
+	public void removeClass(File classfile)
+	{
+		String filename = classfile.toString();
+		if(!filename.endsWith(".class"))
+			return;
+		String classfn = filename.substring(path_name.length() + 1, filename.indexOf(".class"));
+		if(containsClass(classfn))
+		{
+			removed_class_list.add(classfn);
+			removeClass(classfn);
+		}
+	}
+	
+	public Vector getremovedclasslist()
+	{
+		return removed_class_list;
 	}
 	
 	public String getPackageName(String classfullname)

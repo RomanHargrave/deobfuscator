@@ -29,6 +29,8 @@ public class ClassFile
 	public DataInputStream dis = null;
 	public DataOutputStream dos = null;
 	public constantpool cp = constantpool.getinstance();
+	public methodpool mp = methodpool.getinstance();
+	public fieldpool fp = fieldpool.getinstance();
 	
 	public ClassFile(String filename)
 	{
@@ -91,6 +93,31 @@ public class ClassFile
 		constantpool.getinstance().addclasssuffix(suffix);
 	}
 	
+	public void addMethodPrefix(String prefix)
+	{
+		constantpool.getinstance().addmethodprefix(prefix);
+	}
+	
+	public void attacheClassNameForMethod()
+	{
+		constantpool.getinstance().attachclassnameformethod();
+	}
+	
+	public void addMethodSuffix(String suffix)
+	{
+		constantpool.getinstance().addmethodsuffix(suffix);
+	}
+	
+	public void addFieldPrefix(String prefix)
+	{
+		constantpool.getinstance().addfieldprefix(prefix);
+	}
+	
+	public void addFieldSuffix(String suffix)
+	{
+		constantpool.getinstance().addfieldsuffix(suffix);
+	}
+	
 	private void parsefile()
 	{
 		attrreader ar = new attrreader(dis);
@@ -117,6 +144,7 @@ public class ClassFile
 			access_flags = dis.readShort();
 			this_class = dis.readShort();
 			super_class = dis.readShort();
+			fileinfo.getinstance().setinfo(magic, minor_version, major_version, access_flags, this_class, super_class);
 			/*Read interfaces*/
 			interfaces_count = dis.readShort();
 			interfaces = new short[interfaces_count];
@@ -138,6 +166,8 @@ public class ClassFile
 					as[j] = ar.readattr();
 				fields[i] = new fieldinfo(af, ni, di, ac, as);
 			}
+			/*Set field pool*/
+			fp.setpool(fields);
 			/*Read methods*/
 			methods_count = dis.readShort();
 			methods = new methodinfo[methods_count];
@@ -152,6 +182,8 @@ public class ClassFile
 					as[j] = ar.readattr();
 				methods[i] = new methodinfo(af, ni, di, ac, as);
 			}
+			/*Set method pool*/
+			mp.setpool(methods);
 			/*read attributes*/
 			attributes_count = dis.readShort();
 			attributes = new attr[attributes_count];
@@ -178,11 +210,11 @@ public class ClassFile
 			dos.writeShort(major_version);
 			/*Write back constant pool*/
 			constant_pool_count = constantpool.getinstance().getpoolcount();
-			Object[] object_pool = constantpool.getinstance().getpool();
+			Object[] cop = constantpool.getinstance().getpool();
 			dos.writeShort(constant_pool_count);
 			for(int i = 0; i < (constant_pool_count - 1); i++)
 			{
-				cpinfo curcpinfo = (cpinfo)object_pool[i];
+				cpinfo curcpinfo = (cpinfo)cop[i];
 				ciw.writecpinfo(curcpinfo);
 				/*Long and Double occupy two costant pool entries*/
 				if((curcpinfo.gettype() == constanttype.CONSTANT_Long) 
@@ -197,26 +229,32 @@ public class ClassFile
 			for(int i = 0; i < interfaces_count; i++)
 				 dos.writeShort(interfaces[i]);
 			/*Write fields*/
+			fields_count = fieldpool.getinstance().getpoolcount();
+			Object[] fop = fieldpool.getinstance().getpool();
 			dos.writeShort(fields_count);
 			for(int i = 0; i < fields_count; i++)
 			{
-				dos.writeShort(fields[i].getaccessflag());
-				dos.writeShort(fields[i].getnameindex());
-				dos.writeShort(fields[i].getdescriptorindex());
-				dos.writeShort(fields[i].getattributescount());
-				attr[] as = fields[i].getattributes();
+				fieldinfo fi = (fieldinfo)fop[i];
+				dos.writeShort(fi.getaccessflag());
+				dos.writeShort(fi.getnameindex());
+				dos.writeShort(fi.getdescriptorindex());
+				dos.writeShort(fi.getattributescount());
+				attr[] as = fi.getattributes();
 				for(int j = 0; j < as.length; j++)
 					aw.writeattr(as[j]);
 			}
 			/*Write methods*/
+			methods_count = methodpool.getinstance().getpoolcount();
+			Object[] mop = methodpool.getinstance().getpool();
 			dos.writeShort(methods_count);
 			for(int i = 0; i < methods_count; i++)
 			{
-				dos.writeShort(methods[i].getaccessflag());
-				dos.writeShort(methods[i].getnameindex());
-				dos.writeShort(methods[i].getdescriptorindex());
-				dos.writeShort(methods[i].getattributescount());
-				attr[] as = methods[i].getattributes();
+				methodinfo mi = (methodinfo)mop[i];
+				dos.writeShort(mi.getaccessflag());
+				dos.writeShort(mi.getnameindex());
+				dos.writeShort(mi.getdescriptorindex());
+				dos.writeShort(mi.getattributescount());
+				attr[] as = mi.getattributes();
 				for(int j = 0; j < as.length; j++)
 					aw.writeattr(as[j]);
 			}
@@ -253,10 +291,13 @@ public class ClassFile
 		debugger.log(" ");
 		debugger.log("Constant Pool:");
 		debugger.log("------------------------------------");
+		/*Write back constant pool*/
+		constant_pool_count = constantpool.getinstance().getpoolcount();
+		Object[] object_pool = constantpool.getinstance().getpool();
 		for(int i = 0; i < (constant_pool_count - 1); i++)
 		{
 			debugger.log("Constant " + (i+1) + ":");
-			cpinfo curcpinfo = constant_pool[i];
+			cpinfo curcpinfo = (cpinfo)object_pool[i];
 			switch(curcpinfo.gettype())
 			{
 				case constanttype.CONSTANT_Class:
@@ -304,16 +345,16 @@ public class ClassFile
 		debugger.log(" ");
 		debugger.log("Fields:");
 		debugger.log("------------------------------------");
-		for(int i = 0; i < attributes_count; i++)
+		for(int i = 0; i < fields_count; i++)
 		{
-			debugger.log("Filed: " + i);
+			debugger.log("Field: " + i);
 			debugger.log("------------------");
 			fields[i].show();
 			debugger.log(" ");
 		}
 		debugger.log("------------------------------------");
-		debugger.log("Methods:");
 		debugger.log(" ");
+		debugger.log("Methods:");
 		debugger.log("------------------------------------");
 		for(int i = 0; i < methods_count; i++)
 		{

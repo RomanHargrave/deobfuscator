@@ -26,6 +26,26 @@ public class cpinfo
 		
 	}
 	
+	public void addmethodprefix(String prefix)
+	{
+		
+	}
+	
+	public void addmethodsuffix(String suffix)
+	{
+		
+	}
+	
+	public void addfieldprefix(String prefix)
+	{
+		
+	}
+	
+	public void addfieldsuffix(String suffix)
+	{
+		
+	}
+	
 	public void show()
 	{
 		debugger.log("Constant Type: " + toString());
