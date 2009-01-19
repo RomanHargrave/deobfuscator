@@ -19,6 +19,11 @@ public class nameandtypecpinfo extends cpinfo
 		return name_index;
 	}
 	
+	public void setnameindex(short ni)
+	{
+		name_index = ni;
+	}
+	
 	public short getdescriptorindex()
 	{
 		return descriptor_index;
@@ -29,5 +34,10 @@ public class nameandtypecpinfo extends cpinfo
 		super.show();
 		debugger.log("name_index: " + name_index + "{" + constantpool.getinstance().checkpool(name_index) + "}" );
 		debugger.log("descriptor_index: " + descriptor_index + "{" + constantpool.getinstance().checkpool(descriptor_index) + "}" );
+	}
+	
+	public String toString()
+	{
+		return (super.toString() + "{" + "name_index: " + name_index + "|descriptor_index: " + descriptor_index + "}");
 	}
 }

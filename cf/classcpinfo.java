@@ -24,8 +24,9 @@ public class classcpinfo extends cpinfo
 		if(curcpinfo.gettype() != constanttype.CONSTANT_Utf8)
 			return;
 		if(cp.infieldnameindexlist(name_index)
-				|| cp.ininterfacenameindexlist(name_index)
-				|| cp.inmethodnameindexlist(name_index))
+				|| cp.inmethodnameindexlist(name_index)
+				|| fieldpool.getinstance().containsnameindex(name_index)
+				|| methodpool.getinstance().containsnameindex(name_index))
 			 
 		{
 			/*Create a new utf8info for this class for duplicated name */
@@ -44,8 +45,9 @@ public class classcpinfo extends cpinfo
 		if(curcpinfo.gettype() != constanttype.CONSTANT_Utf8)
 			return;
 		if(cp.infieldnameindexlist(name_index)
-				|| cp.ininterfacenameindexlist(name_index)
-				|| cp.inmethodnameindexlist(name_index))
+				|| cp.inmethodnameindexlist(name_index)
+				|| fieldpool.getinstance().containsnameindex(name_index)
+				|| methodpool.getinstance().containsnameindex(name_index))
 			 
 		{
 			/*Create a new utf8info for this class for duplicated name */
@@ -65,7 +67,7 @@ public class classcpinfo extends cpinfo
 	
 	public String toString()
 	{
-		return (super.toString() + "(name_index:" + name_index + ")");
+		return (super.toString() + "{name_index:" + name_index + "}");
 	}
 	
 }

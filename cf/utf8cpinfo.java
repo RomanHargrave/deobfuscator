@@ -48,16 +48,7 @@ public class utf8cpinfo extends cpinfo
 			sb.append(File.separator);
 		sb.append(prefix);
 		sb.append(cn);
-		bytesstr = sb.toString();
-		try
-		{
-			length += prefix.getBytes("UTF-8").length;
-			bytes = bytesstr.getBytes("UTF-8");
-		}
-		catch(Exception e)
-		{
-			
-		}
+		setbytesstr(sb.toString());
 	}
 	
 	public void addclasssuffix(String suffix)
@@ -66,16 +57,60 @@ public class utf8cpinfo extends cpinfo
 			return;
 		StringBuffer sb = new StringBuffer(bytesstr);
 		sb.append(suffix);
-		bytesstr = sb.toString();
+		setbytesstr(sb.toString());
+	}
+	
+	private void addprefix(String prefix)
+	{
+		StringBuffer sb = new StringBuffer(prefix);
+		sb.append(bytesstr);
+		setbytesstr(sb.toString());
+	}
+	
+	private void addsuffix(String suffix)
+	{
+		StringBuffer sb = new StringBuffer(bytesstr);
+		sb.append(suffix);
+		setbytesstr(sb.toString());
+	}
+	
+	public void addmethodprefix(String prefix)
+	{
+		addprefix(prefix);
+	}
+	
+	public void addmethodsuffix(String suffix)
+	{
+		addsuffix(suffix);
+	}
+	
+	public void addfieldprefix(String prefix)
+	{
+		addprefix(prefix);
+	}
+	
+	public void addfieldsuffix(String suffix)
+	{
+		addsuffix(suffix);
+	}
+	
+	public void setbytesstr(String bs)
+	{
+		bytesstr = bs;
 		try
 		{
-			length += suffix.getBytes("UTF-8").length;
 			bytes = bytesstr.getBytes("UTF-8");
+			length = (short)bytes.length;
 		}
 		catch(Exception e)
 		{
 			
 		}
+	}
+	
+	public String getInfoString()
+	{
+		return bytesstr;
 	}
 	
 	public void show()
@@ -87,6 +122,6 @@ public class utf8cpinfo extends cpinfo
 	
 	public String toString()
 	{
-		return (super.toString() + "｛" + bytesstr + "｝");
+		return (super.toString() + "{" + bytesstr + "}");
 	}
 }
