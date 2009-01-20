@@ -39,7 +39,7 @@ public class ClassPath
 		if(!filename.endsWith(".class"))
 			return false;
 		String classfn = filename.substring(path_name.length() + 1, filename.indexOf(".class"));
-		System.out.println(classfn);
+		//System.out.println(classfn);
 		return containsClass(classfn);
 	}
 	
