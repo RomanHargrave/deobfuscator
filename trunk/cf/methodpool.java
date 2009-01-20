@@ -73,6 +73,17 @@ public class methodpool
 		return false;
 	}
 	
+	public boolean containsdescriptorindex(short index)
+	{
+		for(Iterator i = method_pool.iterator(); i.hasNext();)
+		{
+			methodinfo curmethodinfo = (methodinfo)i.next();
+			if(curmethodinfo.getdescriptorindex() == index)
+				return true;
+		}
+		return false;
+	}
+	
 	public void setpool(methodinfo[] mp)
 	{
 		method_pool = new LinkedList(Arrays.asList(mp));

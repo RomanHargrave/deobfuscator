@@ -63,19 +63,10 @@ public class fieldinfo
 			this.setnameindex(index);
 			return;
 		}
-		if(constantpool.getinstance().inclassnameindexlist(ni)
-				|| constantpool.getinstance().inmethodnameindexlist(ni)
-				|| methodpool.getinstance().containsnameindex(ni))
-		{
-			utf8cpinfo ucpinfo = new utf8cpinfo(nxtcpinfo.gettype(), ((utf8cpinfo)nxtcpinfo).getlength(), ((utf8cpinfo)nxtcpinfo).getbytes());
-			ucpinfo.addfieldprefix(prefix);
-			index = constantpool.getinstance().addcpinfo(ucpinfo);
-			this.setnameindex(index);
-			//constantpool.getinstance().addprocessednameindex(index);
-		}
-		else
-			((utf8cpinfo)nxtcpinfo).addfieldprefix(prefix);
-		//constantpool.getinstance().addprocessednameindex(ni);
+		utf8cpinfo ucpinfo = new utf8cpinfo(nxtcpinfo.gettype(), ((utf8cpinfo)nxtcpinfo).getlength(), ((utf8cpinfo)nxtcpinfo).getbytes());
+		ucpinfo.addfieldprefix(prefix);
+		index = constantpool.getinstance().addcpinfo(ucpinfo);
+		this.setnameindex(index);
 	}
 	
 	/*this addfieldsuffix must be based on constantpool scan and process for addfieldsuffix is done*/
@@ -91,19 +82,10 @@ public class fieldinfo
 			this.setnameindex(index);
 			return;
 		}
-		if(constantpool.getinstance().inclassnameindexlist(ni)
-				|| constantpool.getinstance().inmethodnameindexlist(ni)
-				|| methodpool.getinstance().containsnameindex(ni))
-		{
-			utf8cpinfo ucpinfo = new utf8cpinfo(nxtcpinfo.gettype(), ((utf8cpinfo)nxtcpinfo).getlength(), ((utf8cpinfo)nxtcpinfo).getbytes());
-			ucpinfo.addfieldsuffix(suffix);
-			index = constantpool.getinstance().addcpinfo(ucpinfo);
-			this.setnameindex(index);
-			//constantpool.getinstance().addprocessednameindex(index);
-		}
-		else
-			((utf8cpinfo)nxtcpinfo).addfieldsuffix(suffix);
-		//constantpool.getinstance().addprocessednameindex(ni);
+		utf8cpinfo ucpinfo = new utf8cpinfo(nxtcpinfo.gettype(), ((utf8cpinfo)nxtcpinfo).getlength(), ((utf8cpinfo)nxtcpinfo).getbytes());
+		ucpinfo.addfieldsuffix(suffix);
+		index = constantpool.getinstance().addcpinfo(ucpinfo);
+		this.setnameindex(index);
 	}
 	
 	public void show()

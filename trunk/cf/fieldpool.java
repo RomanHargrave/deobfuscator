@@ -60,6 +60,17 @@ public class fieldpool
 		return false;
 	}
 	
+	public boolean containsdescriptorindex(short index)
+	{
+		for(Iterator i = field_pool.iterator(); i.hasNext();)
+		{
+			fieldinfo curfieldinfo = (fieldinfo)i.next();
+			if(curfieldinfo.getdescriptorindex() == index)
+				return true;
+		}
+		return false;
+	}
+	
 	public void setpool(fieldinfo[] fp)
 	{
 		field_pool = new LinkedList(Arrays.asList(fp));
