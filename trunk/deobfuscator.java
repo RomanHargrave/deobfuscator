@@ -19,6 +19,8 @@ public class deobfuscator
 	static boolean attach_classname_for_method = false;
 	static Vector exclude_list;
 	static Vector exclude_file_list;
+	static boolean verbose = false;
+	static boolean help = false;
 	
 	public deobfuscator()
 	{
@@ -29,14 +31,19 @@ public class deobfuscator
 	{
 		/*parse args*/
 		parseargs(args);
+		if(help)
+		{
+			help();
+			return;
+		}
 		/*Create class path list*/
 		if(class_path != null)
 		{
 			File cp = new File(class_path);
 			if(!cp.exists())
 			{
-				help();
-				System.out.println(class_path);
+				error();
+				//System.out.println(class_path);
 				return;
 			}
 			class_path = cp.toString();
@@ -50,7 +57,7 @@ public class deobfuscator
 					File exfile = new File(fstr);
 					if(!exfile.exists())
 						exfile = new File(class_path + File.separator + fstr);
-					System.out.println(exfile.toString());
+					//System.out.println(exfile.toString());
 					exclude_file_list = new Vector();
 					if(exfile.exists()
 							&& (ClassPath.getInstance().containsClass(exfile)))
@@ -86,115 +93,9 @@ public class deobfuscator
 			output_path = op.toString();
 		}
 		
-		if(class_prefix != null)
-		{
-			Collection cfc = ClassPath.getInstance().getClassFiles();
-			for(Iterator i = cfc.iterator(); i.hasNext(); )
-			{
-				File f = (File)i.next();
-				System.out.println(f.toString());
-				ClassFile cf = new ClassFile(f.toString());
-				cf.parseFile();
-				cf.addClassPrefix(class_prefix);
-				StringBuffer sb = new StringBuffer(output_path);
-				sb.append(File.separator);
-				String pgn = ClassPath.getInstance().getPackageName(f);
-				if(!pgn.equals(""))
-				{
-					sb.append(pgn);
-					File pgf = new File(sb.toString());
-					if(!pgf.exists())
-						pgf.mkdirs();
-					sb.append(File.separatorChar);
-				}
-				sb.append(class_prefix);
-				sb.append(f.getName());
-				System.out.println(sb.toString());
-				cf.writeFile(sb.toString());
-				cf.done();
-			}
-			
-			for(Iterator i = exclude_file_list.iterator(); i.hasNext();)
-			{
-				File f = (File)i.next();
-				System.out.println(f.toString());
-				ClassFile cf = new ClassFile(f.toString());
-				cf.parseFile();
-				cf.addClassPrefix(class_prefix);
-				StringBuffer sb = new StringBuffer(output_path);
-				sb.append(File.separator);
-				String pgn = ClassPath.getInstance().getPackageName(f);
-				if(!pgn.equals(""))
-				{
-					sb.append(pgn);
-					File pgf = new File(sb.toString());
-					if(!pgf.exists())
-						pgf.mkdirs();
-					sb.append(File.separatorChar);
-				}
-				sb.append(f.getName());
-				System.out.println(sb.toString());
-				cf.writeFile(sb.toString());
-				cf.done();
-			}
-		}
-		
-		if(class_suffix != null)
-		{
-			Collection cfc = ClassPath.getInstance().getClassFiles();
-			for(Iterator i = cfc.iterator(); i.hasNext(); )
-			{
-				File f = (File)i.next();
-				System.out.println(f.toString());
-				ClassFile cf = new ClassFile(f.toString());
-				cf.parseFile();
-				cf.addClassSuffix(class_suffix);
-				StringBuffer sb = new StringBuffer(output_path);
-				sb.append(File.separator);
-				String pgn = ClassPath.getInstance().getPackageName(f);
-				if(!pgn.equals(""))
-				{
-					sb.append(pgn);
-					File pgf = new File(sb.toString());
-					if(!pgf.exists())
-						pgf.mkdirs();
-					sb.append(File.separatorChar);
-				}
-				sb.append(ClassPath.getInstance().getClassName(f));
-				sb.append(class_suffix);
-				sb.append(".class");
-				cf.writeFile(sb.toString());
-				System.out.println(sb.toString());
-				cf.done();
-			}
-			
-			for(Iterator i = exclude_file_list.iterator(); i.hasNext();)
-			{
-				File f = (File)i.next();
-				System.out.println(f.toString());
-				ClassFile cf = new ClassFile(f.toString());
-				cf.parseFile();
-				cf.addClassSuffix(class_suffix);
-				StringBuffer sb = new StringBuffer(output_path);
-				sb.append(File.separator);
-				String pgn = ClassPath.getInstance().getPackageName(f);
-				if(!pgn.equals(""))
-				{
-					sb.append(pgn);
-					File pgf = new File(sb.toString());
-					if(!pgf.exists())
-						pgf.mkdirs();
-					sb.append(File.separatorChar);
-				}
-				sb.append(ClassPath.getInstance().getClassName(f));
-				sb.append(".class");
-				cf.writeFile(sb.toString());
-				System.out.println(sb.toString());
-				cf.done();
-			}
-		}
-		
-		if(method_prefix != null
+		if(class_prefix != null
+			|| class_suffix != null
+			|| method_prefix != null
 			|| method_suffix != null
 			|| field_prefix != null
 			|| field_suffix != null
@@ -204,71 +105,60 @@ public class deobfuscator
 			for(Iterator i = cfc.iterator(); i.hasNext(); )
 			{
 				File f = (File)i.next();
-				System.out.println(f.toString());
-				ClassFile cf = new ClassFile(f.toString());
-				cf.parseFile();
-				if(method_prefix != null)
-					cf.addMethodPrefix(method_prefix);
-				if(method_suffix != null)
-					cf.addMethodSuffix(method_suffix);
-				if(attach_classname_for_method)
-					cf.attacheClassNameForMethod();
-				if(field_prefix != null)
-					cf.addFieldPrefix(field_prefix);
-				if(field_suffix != null)
-					cf.addFieldSuffix(field_suffix);
-				StringBuffer sb = new StringBuffer(output_path);
-				sb.append(File.separator);
-				String pgn = ClassPath.getInstance().getPackageName(f);
-				if(!pgn.equals(""))
-				{
-					sb.append(pgn);
-					File pgf = new File(sb.toString());
-					if(!pgf.exists())
-						pgf.mkdirs();
-					sb.append(File.separatorChar);
-				}
-				sb.append(f.getName());
-				System.out.println(sb.toString());
-				cf.writeFile(sb.toString());
-				cf.done();
+				processingfile(f);
 			}
 			
 			for(Iterator i = exclude_file_list.iterator(); i.hasNext();)
 			{
 				File f = (File)i.next();
-				System.out.println(f.toString());
-				ClassFile cf = new ClassFile(f.toString());
-				cf.parseFile();
-				if(method_prefix != null)
-					cf.addMethodPrefix(method_prefix);
-				if(method_suffix != null)
-					cf.addMethodSuffix(method_suffix);
-				if(attach_classname_for_method)
-					cf.attacheClassNameForMethod();
-				if(field_prefix != null)
-					cf.addFieldPrefix(field_prefix);
-				if(field_suffix != null)
-					cf.addFieldSuffix(field_suffix);
-				StringBuffer sb = new StringBuffer(output_path);
-				sb.append(File.separator);
-				String pgn = ClassPath.getInstance().getPackageName(f);
-				if(!pgn.equals(""))
-				{
-					sb.append(pgn);
-					File pgf = new File(sb.toString());
-					if(!pgf.exists())
-						pgf.mkdirs();
-					sb.append(File.separatorChar);
-				}
-				sb.append(f.getName());
-				System.out.println(sb.toString());
-				cf.writeFile(sb.toString());
-				cf.done();
+				processingfile(f);
 			}
 			
 		}
 	
+	}
+	
+	private static void processingfile(File f)
+	{
+		if(verbose)
+			System.out.println("Parsing " + f.toString());
+		ClassFile cf = new ClassFile(f.toString());
+		cf.parseFile();
+		if(class_prefix != null)
+			cf.addClassPrefix(class_prefix);
+		if(class_suffix != null)
+			cf.addClassSuffix(class_suffix);
+		if(method_prefix != null)
+			cf.addMethodPrefix(method_prefix);
+		if(method_suffix != null)
+			cf.addMethodSuffix(method_suffix);
+		if(attach_classname_for_method)
+			cf.attacheClassNameForMethod();
+		if(field_prefix != null)
+			cf.addFieldPrefix(field_prefix);
+		if(field_suffix != null)
+			cf.addFieldSuffix(field_suffix);
+		StringBuffer sb = new StringBuffer(output_path);
+		sb.append(File.separator);
+		String pgn = ClassPath.getInstance().getPackageName(f);
+		if(!pgn.equals(""))
+		{
+			sb.append(pgn);
+			File pgf = new File(sb.toString());
+			if(!pgf.exists())
+				pgf.mkdirs();
+			sb.append(File.separatorChar);
+		}
+		if(class_prefix != null)
+			sb.append(class_prefix);
+		sb.append(ClassPath.getInstance().getClassName(f));
+		if(class_suffix != null)
+			sb.append(class_suffix);
+		sb.append(".class");
+		if(verbose)
+			System.out.println("Generating " +sb.toString());
+		cf.writeFile(sb.toString());
+		cf.done();
 	}
 	
 	private static void parseargs(String[] args)
@@ -276,11 +166,9 @@ public class deobfuscator
 		for(int i = 0; i < args.length; i++)
 		{
 			/*To check option mode*/
-			if(args[i].equalsIgnoreCase("-cp"))
+			if(!args[i].startsWith("-"))
 			{
-				i++;
-				if(i < args.length)
-					class_path = args[i];
+				class_path = args[i];
 			}
 			else if(args[i].equalsIgnoreCase("-op"))
 			{
@@ -340,11 +228,33 @@ public class deobfuscator
 				if(i < args.length)
 					i--;
 			}
+			else if(args[i].equalsIgnoreCase("-v"))
+				verbose = true;
+			else if(args[i].equalsIgnoreCase("-h"))
+				help = true;
 		}
+	}
+	
+	private static void error()
+	{
+		System.out.println("Input wrong");
 	}
 	
 	private static void help()
 	{
-		System.out.println("Input wrong");
+		System.out.println("deobfuscator v1.0.0 Copyright 2009 LXB (laixuebin@gmail.com)");
+		System.out.println("Usage: java -jar deobfuscator <class_path> [options]");
+		System.out.println("Options: -op  <path>  	Processing output path");
+		System.out.println("         -cpx <prefix> 	Class prefix");
+		System.out.println("         -csx <suffix> 	Class suffix");
+		System.out.println("         -mpx <prefix> 	Method prefix");
+		System.out.println("         -msx <suffix> 	Method suffix");
+		System.out.println("         -acfm          Attach full class name as prefix for each method");
+		System.out.println("         -fpx <prefix> 	Field prefix");
+		System.out.println("         -fsx <suffix> 	Field prefix");
+		System.out.println("         -ex  <files> 	Specify files to be excluded for processing");
+		System.out.println("         -v             Processing with verbose");
+		System.out.println("         -h             Show this help message");
+		System.out.println("Visit http://code.google.com/p/deobfuscator/ for more information");
 	}
 }
