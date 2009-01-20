@@ -56,7 +56,8 @@ public class methodinfo
 	public void addmethodprefix(String prefix)
 	{
 		short ni = this.getnameindex();
-		if(constantpool.getinstance().checkpool(ni).equals("<init>"))
+		if(constantpool.getinstance().checkpool(ni).equals("<init>")
+				|| constantpool.getinstance().checkpool(ni).equals("<clinit>"))
 			return;
 		cpinfo nxtcpinfo = constantpool.getinstance().getcpinfo(ni);
 		if(nxtcpinfo.gettype() != constanttype.CONSTANT_Utf8)
@@ -69,7 +70,9 @@ public class methodinfo
 		}
 		if(constantpool.getinstance().inclassnameindexlist(ni)
 				|| constantpool.getinstance().infieldnameindexlist(ni)
-				|| fieldpool.getinstance().containsnameindex(ni))
+				|| fieldpool.getinstance().containsnameindex(ni)
+				|| methodpool.getinstance().containsdescriptorindex(ni)
+				|| fieldpool.getinstance().containsdescriptorindex(ni))
 		{
 			utf8cpinfo ucpinfo = new utf8cpinfo(nxtcpinfo.gettype(), ((utf8cpinfo)nxtcpinfo).getlength(), ((utf8cpinfo)nxtcpinfo).getbytes());
 			ucpinfo.addmethodprefix(prefix);
@@ -86,7 +89,8 @@ public class methodinfo
 	public void addmethodsuffix(String suffix)
 	{
 		short ni = this.getnameindex();
-		if (constantpool.getinstance().checkpool(ni).equals("<init>"))
+		if (constantpool.getinstance().checkpool(ni).equals("<init>")
+				|| constantpool.getinstance().checkpool(ni).equals("<clinit>"))
 			return;
 		cpinfo nxtcpinfo = constantpool.getinstance().getcpinfo(ni);
 		if(nxtcpinfo.gettype() != constanttype.CONSTANT_Utf8)
@@ -97,35 +101,28 @@ public class methodinfo
 			this.setnameindex(index);
 			return;
 		}
-		if(constantpool.getinstance().inclassnameindexlist(ni)
-				|| constantpool.getinstance().infieldnameindexlist(ni)
-				|| fieldpool.getinstance().containsnameindex(ni))
-		{
 			utf8cpinfo ucpinfo = new utf8cpinfo(nxtcpinfo.gettype(), ((utf8cpinfo)nxtcpinfo).getlength(), ((utf8cpinfo)nxtcpinfo).getbytes());
 			ucpinfo.addmethodsuffix(suffix);
 			index = constantpool.getinstance().addcpinfo(ucpinfo);
 			this.setnameindex(index);
-			//constantpool.getinstance().addprocessednameindex(index);
-		}
-		else
-			((utf8cpinfo)nxtcpinfo).addmethodsuffix(suffix);
-		//constantpool.getinstance().addprocessednameindex(ni);
 	}
 	
 	public void attachclassnameformethod()
 	{
+		constantpool cp = constantpool.getinstance();
 		short ni = this.getnameindex();
-		if(constantpool.getinstance().checkpool(ni).equals("<init>"))
+		if(cp.checkpool(ni).equals("<init>")
+				 || cp.checkpool(ni).equals("<clinit>"))
 			return;
-		cpinfo nxtcpinfo = constantpool.getinstance().getcpinfo(ni);
+		cpinfo nxtcpinfo = cp.getcpinfo(ni);
 		if(nxtcpinfo.gettype() != constanttype.CONSTANT_Utf8)
 			return;
-		String cs = constantpool.getinstance().checkpool(fileinfo.getinstance().getthisclass());
+		String cs = cp.checkpool(fileinfo.getinstance().getthisclass());
 		//System.out.println(cs);
 		StringBuffer sb = new StringBuffer(cs.replaceAll(File.separator, "_"));
 		sb.append("_");
 		short index;
-		index = constantpool.getinstance().getutf8indexasstr(sb.toString() + ((utf8cpinfo)nxtcpinfo).getInfoString());
+		index = cp.getutf8indexasstr(sb.toString() + ((utf8cpinfo)nxtcpinfo).getInfoString());
 		//System.out.println(sb.toString() + ((utf8cpinfo)nxtcpinfo).getInfoString() + "=== index is " + index);
 		if(index != 0)
 		{
@@ -134,9 +131,9 @@ public class methodinfo
 		}
 		utf8cpinfo ucpinfo = new utf8cpinfo(nxtcpinfo.gettype(), ((utf8cpinfo)nxtcpinfo).getlength(), ((utf8cpinfo)nxtcpinfo).getbytes());
 		ucpinfo.addmethodprefix(sb.toString());
-		index = constantpool.getinstance().addcpinfo(ucpinfo);
+		index = cp.addcpinfo(ucpinfo);
 		this.setnameindex(index);
-		constantpool.getinstance().addprocessednameindex(ni);
+		cp.addprocessednameindex(ni);
 	}
 	
 	public void show()

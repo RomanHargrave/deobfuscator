@@ -209,6 +209,8 @@ public class deobfuscator
 				cf.parseFile();
 				if(method_prefix != null)
 					cf.addMethodPrefix(method_prefix);
+				if(method_suffix != null)
+					cf.addMethodSuffix(method_suffix);
 				if(attach_classname_for_method)
 					cf.attacheClassNameForMethod();
 				if(field_prefix != null)
@@ -240,6 +242,8 @@ public class deobfuscator
 				cf.parseFile();
 				if(method_prefix != null)
 					cf.addMethodPrefix(method_prefix);
+				if(method_suffix != null)
+					cf.addMethodSuffix(method_suffix);
 				if(attach_classname_for_method)
 					cf.attacheClassNameForMethod();
 				if(field_prefix != null)

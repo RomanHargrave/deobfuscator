@@ -19,7 +19,7 @@ public class integercpinfo extends cpinfo
 	public void show()
 	{
 		super.show();
-		debugger.log("name_index: " + debugger.hexstr(bytes, 8));
+		debugger.log("bytes: " + debugger.hexstr(bytes, 8));
 	}
 	
 	public String toString()

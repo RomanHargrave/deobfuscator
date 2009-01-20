@@ -263,16 +263,14 @@ public class constantpool
 	
 	public short getutf8indexasstr(String str)
 	{
-		short count = 1;
 		//System.out.println("Search: " + str);
-		for(Iterator i = constant_pool.iterator(); i.hasNext(); count++)
+		for(Iterator i = constant_pool.iterator(); i.hasNext(); )
 		{
 			cpinfo curcpinfo = (cpinfo)i.next();
 			if(curcpinfo.gettype() == constanttype.CONSTANT_Utf8)
 			{
-				//System.out.println(" str" + count  + " is: " + ((utf8cpinfo)curcpinfo).getInfoString());
-				if(((utf8cpinfo)curcpinfo).getInfoString().equalsIgnoreCase(str))
-					return count;
+				if(((utf8cpinfo)curcpinfo).getInfoString().equals(str))
+					return (short)(constant_pool.indexOf(curcpinfo) + 1);
 			}
 			else if((curcpinfo.gettype() == constanttype.CONSTANT_Long) 
 					|| (curcpinfo.gettype() == constanttype.CONSTANT_Double))
@@ -280,15 +278,54 @@ public class constantpool
 		}
 		if(constant_add_list != null)
 		{
-			for(Iterator i = constant_add_list.iterator(); i.hasNext(); count++)
+			//count ++;
+			for(Iterator i = constant_add_list.iterator(); i.hasNext();)
 			{
 				cpinfo curcpinfo = (cpinfo)i.next();
 				if(curcpinfo.gettype() == constanttype.CONSTANT_Utf8)
 				{
-					//System.out.println(" str" + count  + " is: " + ((utf8cpinfo)curcpinfo).getInfoString());
-					
-					if(((utf8cpinfo)curcpinfo).getInfoString().equalsIgnoreCase(str))
-						return count;
+					if(((utf8cpinfo)curcpinfo).getInfoString().equals(str))
+						return (short)(constant_add_list.indexOf(curcpinfo) + constant_pool.size() + 1);
+				}
+				else if((curcpinfo.gettype() == constanttype.CONSTANT_Long) 
+						|| (curcpinfo.gettype() == constanttype.CONSTANT_Double))
+					i.next();
+			}
+		}
+		return 0;
+	}
+	
+	public short getntindexasstr(String name, String type)
+	{
+		//System.out.println("Search: " + name + "" + type);
+		for(Iterator i = constant_pool.iterator(); i.hasNext();)
+		{
+			cpinfo curcpinfo = (cpinfo)i.next();
+			if(curcpinfo.gettype() == constanttype.CONSTANT_NameAndType)
+			{
+				String nstr = constantpool.getinstance().checkpool(((nameandtypecpinfo)curcpinfo).getnameindex());
+				String tstr = constantpool.getinstance().checkpool(((nameandtypecpinfo)curcpinfo).getdescriptorindex());
+				if(nstr.equals(name) 
+						&& tstr.equals(type))
+					return (short)(constant_pool.indexOf(curcpinfo) + 1);
+			}
+			else if((curcpinfo.gettype() == constanttype.CONSTANT_Long) 
+					|| (curcpinfo.gettype() == constanttype.CONSTANT_Double))
+				i.next();
+		}
+		if(constant_add_list != null)
+		{
+			//count++;
+			for(Iterator i = constant_add_list.iterator(); i.hasNext();)
+			{
+				cpinfo curcpinfo = (cpinfo)i.next();
+				if(curcpinfo.gettype() == constanttype.CONSTANT_NameAndType)
+				{
+					String nstr = constantpool.getinstance().checkpool(((nameandtypecpinfo)curcpinfo).getnameindex());
+					String tstr = constantpool.getinstance().checkpool(((nameandtypecpinfo)curcpinfo).getdescriptorindex());
+					if(nstr.equals(name) 
+							&& tstr.equals(type))
+						return (short)(constant_add_list.indexOf(curcpinfo) + constant_pool.size() +1);
 				}
 				else if((curcpinfo.gettype() == constanttype.CONSTANT_Long) 
 						|| (curcpinfo.gettype() == constanttype.CONSTANT_Double))
