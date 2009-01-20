@@ -107,11 +107,13 @@ public class deobfuscator
 				File f = (File)i.next();
 				processingfile(f);
 			}
-			
-			for(Iterator i = exclude_file_list.iterator(); i.hasNext();)
+			if(exclude_file_list != null)
 			{
-				File f = (File)i.next();
-				processingfile(f);
+				for(Iterator i = exclude_file_list.iterator(); i.hasNext();)
+				{
+					File f = (File)i.next();
+					processingfile(f);
+				}
 			}
 			
 		}
