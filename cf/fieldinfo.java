@@ -1,5 +1,7 @@
 package cf;
 
+import java.io.File;
+
 import util.debugger;
 
 public class fieldinfo 
@@ -86,6 +88,32 @@ public class fieldinfo
 		ucpinfo.addfieldsuffix(suffix);
 		index = constantpool.getinstance().addcpinfo(ucpinfo);
 		this.setnameindex(index);
+	}
+	
+	public void attachclassname()
+	{
+		constantpool cp = constantpool.getinstance();
+		short ni = this.getnameindex();
+		cpinfo nxtcpinfo = cp.getcpinfo(ni);
+		if(nxtcpinfo.gettype() != constanttype.CONSTANT_Utf8)
+			return;
+		String cs = cp.checkpool(fileinfo.getinstance().getthisclass());
+		//System.out.println(cs);
+		StringBuffer sb = new StringBuffer(cs.replaceAll(File.separator, "_"));
+		sb.append("_");
+		short index;
+		index = cp.getutf8indexasstr(sb.toString() + ((utf8cpinfo)nxtcpinfo).getInfoString());
+		//System.out.println(sb.toString() + ((utf8cpinfo)nxtcpinfo).getInfoString() + "=== index is " + index);
+		if(index != 0)
+		{
+			this.setnameindex(index);
+			return;
+		}
+		utf8cpinfo ucpinfo = new utf8cpinfo(nxtcpinfo.gettype(), ((utf8cpinfo)nxtcpinfo).getlength(), ((utf8cpinfo)nxtcpinfo).getbytes());
+		ucpinfo.addfieldprefix(sb.toString());
+		index = cp.addcpinfo(ucpinfo);
+		this.setnameindex(index);
+		cp.addprocessednameindex(ni);
 	}
 	
 	public void show()

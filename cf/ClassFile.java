@@ -118,6 +118,11 @@ public class ClassFile
 		constantpool.getinstance().addfieldsuffix(suffix);
 	}
 	
+	public void attacheClassNameForField()
+	{
+		constantpool.getinstance().attachclassnameforfield();
+	}
+	
 	private void parsefile()
 	{
 		attrreader ar = new attrreader(dis);
