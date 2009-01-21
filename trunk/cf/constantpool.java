@@ -464,7 +464,7 @@ public class constantpool
 			cpinfo curcpinfo = (cpinfo)i.next();
 			if((curcpinfo.gettype() == constanttype.CONSTANT_Methodref)
 				|| (curcpinfo.gettype() == constanttype.CONSTANT_InterfaceMethodref))
-				((fieldrefcpinfo)curcpinfo).attachclassnameformethod();
+				((fieldrefcpinfo)curcpinfo).attachclassname(curcpinfo.gettype());
 			else if((curcpinfo.gettype() == constanttype.CONSTANT_Long) 
 					|| (curcpinfo.gettype() == constanttype.CONSTANT_Double))
 				i.next();
@@ -477,7 +477,34 @@ public class constantpool
 			for(int i = 0; i < oa.length; i++)
 			{
 				methodinfo mi = (methodinfo)oa[i];
-				mi.attachclassnameformethod();
+				mi.attachclassname();
+			}
+		}
+		commitchange();
+		clearprocessedntindexlist();
+		clearprocessednameindexlist();
+	}
+	
+	public void attachclassnameforfield()
+	{
+		for(Iterator i = constant_pool.iterator(); i.hasNext();)
+		{
+			cpinfo curcpinfo = (cpinfo)i.next();
+			if(curcpinfo.gettype() == constanttype.CONSTANT_Fieldref)
+				((fieldrefcpinfo)curcpinfo).attachclassname(curcpinfo.gettype());
+			else if((curcpinfo.gettype() == constanttype.CONSTANT_Long) 
+					|| (curcpinfo.gettype() == constanttype.CONSTANT_Double))
+				i.next();
+		}
+		/*Need to double check method pool because it can't be covered by constantpool processing for 100%*/
+		String curcn = checkpool(fileinfo.getinstance().getthisclass());
+		if(ClassPath.getInstance().containsClass(curcn))
+		{
+			Object[] oa = fieldpool.getinstance().getpool();
+			for(int i = 0; i < oa.length; i++)
+			{
+				fieldinfo fi = (fieldinfo)oa[i];
+				fi.attachclassname();
 			}
 		}
 		commitchange();

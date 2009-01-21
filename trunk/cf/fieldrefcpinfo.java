@@ -91,7 +91,7 @@ public class fieldrefcpinfo extends cpinfo
 		((nameandtypecpinfo)curcpinfo).setnameindex(index);
 	}
 	
-	public void attachclassnameformethod()
+	public void attachclassname(byte type)
 	{
 		constantpool cp = constantpool.getinstance();
 		String cs = cp.checkpool(class_index);
@@ -107,9 +107,12 @@ public class fieldrefcpinfo extends cpinfo
 		String tstr = cp.checkpool(ti);
 		//System.out.println(nstr);
 		/*Skip error constant type, processed name index, constructor*/
-		if(curcpinfo.gettype() != constanttype.CONSTANT_NameAndType
-			|| cp.checkpool(ni).equals("<init>")
-			|| cp.checkpool(ni).equals("<clinit>"))
+		if(curcpinfo.gettype() != constanttype.CONSTANT_NameAndType)
+			return;
+		if(((type == constanttype.CONSTANT_Methodref)
+			|| (type == constanttype.CONSTANT_Methodref))
+			&& (cp.checkpool(ni).equals("<init>")
+					|| cp.checkpool(ni).equals("<clinit>")))
 			return;
 		short nati = cp.getntindexasstr(nstr, tstr);
 		//System.out.println("nstr:tstr->" + nstr + ":" + tstr + " nati is " + nati);
@@ -133,12 +136,17 @@ public class fieldrefcpinfo extends cpinfo
 		/*If the specified name idnex, had also been used as class name | field name | current class's method, 
 		 * then we need to create a new utf8 entry for it */
 		utf8cpinfo ucpinfo = new utf8cpinfo(nxtcpinfo.gettype(), ((utf8cpinfo)nxtcpinfo).getlength(), ((utf8cpinfo)nxtcpinfo).getbytes());
-		ucpinfo.addmethodprefix(sb.toString());
+		if((type == constanttype.CONSTANT_Methodref)
+			|| (type == constanttype.CONSTANT_InterfaceMethodref))
+			ucpinfo.addmethodprefix(sb.toString());
+		else if(type == constanttype.CONSTANT_Fieldref)
+			ucpinfo.addfieldprefix(sb.toString());
 		index = cp.addcpinfo(ucpinfo);
 		((nameandtypecpinfo)curcpinfo).setnameindex(index);
 		//methodpool.getinstance().replacenameindex(ni, index, class_index);
-		
 	}
+	
+	
 	
 	public void addfieldprefix(String prefix)
 	{

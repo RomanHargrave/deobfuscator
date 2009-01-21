@@ -17,6 +17,7 @@ public class deobfuscator
 	static String class_path = null;
 	static String output_path = null;
 	static boolean attach_classname_for_method = false;
+	static boolean attach_classname_for_field = false;
 	static Vector exclude_list;
 	static Vector exclude_file_list;
 	static boolean verbose = false;
@@ -99,7 +100,8 @@ public class deobfuscator
 			|| method_suffix != null
 			|| field_prefix != null
 			|| field_suffix != null
-			|| attach_classname_for_method)
+			|| attach_classname_for_method
+			|| attach_classname_for_field)
 		{
 			Collection cfc = ClassPath.getInstance().getClassFiles();
 			for(Iterator i = cfc.iterator(); i.hasNext(); )
@@ -140,6 +142,8 @@ public class deobfuscator
 			cf.addFieldPrefix(field_prefix);
 		if(field_suffix != null)
 			cf.addFieldSuffix(field_suffix);
+		if(attach_classname_for_field)
+			cf.attacheClassNameForField();
 		StringBuffer sb = new StringBuffer(output_path);
 		sb.append(File.separator);
 		String pgn = ClassPath.getInstance().getPackageName(f);
@@ -218,6 +222,10 @@ public class deobfuscator
 			{
 				attach_classname_for_method = true;
 			}
+			else if(args[i].equalsIgnoreCase("-acff"))
+			{
+				attach_classname_for_field = true;
+			}
 			else if(args[i].equalsIgnoreCase("-ex"))
 			{
 				i++;
@@ -240,6 +248,7 @@ public class deobfuscator
 	private static void error()
 	{
 		System.out.println("Input wrong");
+		help();
 	}
 	
 	private static void help()
@@ -252,6 +261,7 @@ public class deobfuscator
 		System.out.println("         -mpx <prefix> 	Method prefix");
 		System.out.println("         -msx <suffix> 	Method suffix");
 		System.out.println("         -acfm          Attach full class name as prefix for each method");
+		System.out.println("         -acff          Attach full class name as prefix for each field");
 		System.out.println("         -fpx <prefix> 	Field prefix");
 		System.out.println("         -fsx <suffix> 	Field prefix");
 		System.out.println("         -ex  <files> 	Specify files to be excluded for processing");

@@ -107,7 +107,7 @@ public class methodinfo
 			this.setnameindex(index);
 	}
 	
-	public void attachclassnameformethod()
+	public void attachclassname()
 	{
 		constantpool cp = constantpool.getinstance();
 		short ni = this.getnameindex();
