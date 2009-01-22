@@ -108,6 +108,11 @@ public class ClassPath
 		path_name = class_path.toString();
 	}
 	
+	public String getpathname()
+	{
+		return path_name;
+	}
+	
 	public void updateClassList()
 	{
 		class_list.clear();

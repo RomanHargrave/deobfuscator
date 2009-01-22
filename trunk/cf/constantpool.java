@@ -222,6 +222,39 @@ public class constantpool
 		
 	}
 	
+	public void replaceclassname(String oldname, String newname)
+	{
+		for(Iterator i = constant_pool.iterator(); i.hasNext();)
+		{
+			cpinfo curcpinfo = (cpinfo)i.next();
+			if(curcpinfo.gettype() == constanttype.CONSTANT_Class)
+			{
+				short ni = ((classcpinfo)curcpinfo).getnameindex();
+				if(constantpool.getinstance().checkpool(ni).equals(oldname))
+				{
+					utf8cpinfo ucpinfo = (utf8cpinfo)constantpool.getinstance().getcpinfo(ni);
+					ucpinfo.setbytesstr(newname);
+				}
+			}
+			else if(curcpinfo.gettype() == constanttype.CONSTANT_NameAndType )
+			{
+				short di = ((nameandtypecpinfo)curcpinfo).getdescriptorindex();
+				cpinfo nxtcpinfo = constantpool.getinstance().getcpinfo(di);
+				if(nxtcpinfo.gettype() == constanttype.CONSTANT_Utf8)
+				{
+					String oldstr = "L" + oldname + ";";
+					String newstr = "L" + newname + ";";
+					String infostr = ((utf8cpinfo)nxtcpinfo).getInfoString();
+					infostr = infostr.replaceAll(oldstr, newstr);
+					((utf8cpinfo)nxtcpinfo).setbytesstr(infostr);
+				}
+			}
+			else if((curcpinfo.gettype() == constanttype.CONSTANT_Long) 
+					|| (curcpinfo.gettype() == constanttype.CONSTANT_Double))
+				i.next();
+		}
+	}
+	
 	public int getmethodntrefcount(short nati)
 	{
 		int count = 0; 

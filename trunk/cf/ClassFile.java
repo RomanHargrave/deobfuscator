@@ -123,6 +123,13 @@ public class ClassFile
 		constantpool.getinstance().attachclassnameforfield();
 	}
 	
+	public void replaceClassName(String oldname, String newname)
+	{
+		constantpool.getinstance().replaceclassname(oldname, newname);
+		methodpool.getinstance().replaceclassname(oldname, newname);
+		fieldpool.getinstance().replaceclassname(oldname, newname);
+	}
+	
 	private void parsefile()
 	{
 		attrreader ar = new attrreader(dis);
