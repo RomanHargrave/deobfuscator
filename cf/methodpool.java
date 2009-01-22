@@ -84,6 +84,24 @@ public class methodpool
 		return false;
 	}
 	
+	public void replaceclassname(String oldname, String newname)
+	{
+		for(Iterator i = method_pool.iterator(); i.hasNext();)
+		{
+			methodinfo curmethodinfo = (methodinfo)i.next();
+			short di = curmethodinfo.getdescriptorindex();
+			cpinfo nxtcpinfo = constantpool.getinstance().getcpinfo(di);
+			if(nxtcpinfo.gettype() == constanttype.CONSTANT_Utf8)
+			{
+				String oldstr = "L" + oldname + ";";
+				String newstr = "L" + newname + ";";
+				String infostr = ((utf8cpinfo)nxtcpinfo).getInfoString();
+				infostr.replaceAll(oldstr, newstr);
+				((utf8cpinfo)nxtcpinfo).setbytesstr(infostr);
+			}
+		}
+	}
+	
 	public void setpool(methodinfo[] mp)
 	{
 		method_pool = new LinkedList(Arrays.asList(mp));
